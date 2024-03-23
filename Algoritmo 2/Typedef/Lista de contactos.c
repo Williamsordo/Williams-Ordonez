@@ -1,21 +1,21 @@
 #include <stdio.h>
 #include <string.h>
 
-// Definici髇 de la estructura Contacto
+// Definici贸n de la estructura Contacto
 typedef struct {
     char nombre[50];
     char telefono[20];
     char correo[50];
 } Contacto;
 
-// Funci髇 para agregar un contacto
+// Funci贸n para agregar un contacto
 void agregarContacto(Contacto *contacto, char *nombre, char *telefono, char *correo) {
     strcpy(contacto->nombre, nombre);
     strcpy(contacto->telefono, telefono);
     strcpy(contacto->correo, correo);
 }
 
-// Funci髇 para imprimir un contacto
+// Funci贸n para imprimir un contacto
 void imprimirContacto(Contacto *contacto) {
     printf("Nombre: %s\n", contacto->nombre);
     printf("Telefono: %s\n", contacto->telefono);
@@ -26,11 +26,11 @@ int main() {
     // Crear dos contactos
     Contacto contacto1, contacto2;
 
-    // Agregar informaci髇 a los contactos
+    // Agregar informaci贸n a los contactos
     agregarContacto(&contacto1, "Williams Ordonez", "04446527443", "lordwasas@gmail.com");
     agregarContacto(&contacto2, "Barbaro Lopez", "02523434344", "Nmsldg@gmail.com");
 
-    // Imprimir la informaci髇 de los contactos
+    // Imprimir la informaci贸n de los contactos
     imprimirContacto(&contacto1);
     printf("\n");
     imprimirContacto(&contacto2);
