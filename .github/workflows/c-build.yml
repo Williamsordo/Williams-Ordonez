@@ -2,9 +2,9 @@ name: Build C Programs
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, Algoritmos-y-programacion ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, Algoritmos-y-programacion ]
 
 jobs:
   build:
