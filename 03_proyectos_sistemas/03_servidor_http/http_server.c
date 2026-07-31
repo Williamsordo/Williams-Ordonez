@@ -1,11 +1,8 @@
 /*
- * ============================================================================
- * Proyecto   : Micro Servidor Web HTTP y API REST en C
- * Nivel      : Avanzado / Portafolio Senior (Sistemas Distribuidos & Sockets TCP)
- * Archivo    : http_server.c
- * Descripción: Servidor Web HTTP multiplataforma (Windows Winsock2 / Linux Sockets)
- *              capaz de servir archivos HTML y responder a llamadas a una API REST (JSON).
- * ============================================================================
+ * HTTP Server in C
+ * ----------------
+ * Servidor web HTTP con sockets TCP (Winsock2 / POSIX).
+ * Soporta peticiones GET para archivos estaticos y endpoint JSON.
  */
 
 #include <stdio.h>
@@ -40,13 +37,12 @@ void handle_client(SOCKET client_socket) {
     }
 
     buffer[bytes_read] = '\0';
-    printf("\n[PETICIÓN HTTP RECIBIDA]:\n%.100s...\n", buffer);
+    printf("\n[Peticion HTTP]:\n%.100s...\n", buffer);
 
     char http_response[BUFFER_SIZE];
 
-    // Endpoint API REST JSON
     if (strstr(buffer, "GET /api/status") != NULL) {
-        const char* json_body = "{\"status\": \"online\", \"server\": \"Micro-HTTP C Server\", \"code\": 200}";
+        const char* json_body = "{\"status\": \"ok\", \"server\": \"c-http-server\", \"port\": 8080}";
         snprintf(http_response, sizeof(http_response),
                  "HTTP/1.1 200 OK\r\n"
                  "Content-Type: application/json; charset=UTF-8\r\n"
@@ -55,17 +51,15 @@ void handle_client(SOCKET client_socket) {
                  "Connection: close\r\n\r\n"
                  "%s",
                  strlen(json_body), json_body);
-    }
-    // Página principal / (HTML)
-    else if (strstr(buffer, "GET / ") != NULL || strstr(buffer, "GET /index.html") != NULL) {
+    } else if (strstr(buffer, "GET / ") != NULL || strstr(buffer, "GET /index.html") != NULL) {
         const char* html_body =
             "<!DOCTYPE html>"
             "<html>"
-            "<head><title>Servidor C HTTP</title><style>body{font-family:sans-serif;background:#0f172a;color:#fff;text-align:center;padding:50px;}h1{color:#38bdf8;}</style></head>"
+            "<head><title>Servidor C HTTP</title></head>"
             "<body>"
-            "<h1>🚀 Micro Servidor HTTP en C</h1>"
-            "<p>Este servidor fue construido en C puro utilizando sockets TCP multiplataforma.</p>"
-            "<p>API Endpoint activo: <a href='/api/status' style='color:#38bdf8;'>/api/status</a></p>"
+            "<h1>Servidor Web HTTP en C</h1>"
+            "<p>Servidor HTTP nativo mediante sockets TCP.</p>"
+            "<p>API Endpoint: <a href='/api/status'>/api/status</a></p>"
             "</body>"
             "</html>";
 
@@ -76,10 +70,8 @@ void handle_client(SOCKET client_socket) {
                  "Connection: close\r\n\r\n"
                  "%s",
                  strlen(html_body), html_body);
-    }
-    // 404 Not Found
-    else {
-        const char* not_found_body = "<html><body><h1>404 Recurso No Encontrado</h1></body></html>";
+    } else {
+        const char* not_found_body = "<html><body><h1>404 Not Found</h1></body></html>";
         snprintf(http_response, sizeof(http_response),
                  "HTTP/1.1 404 Not Found\r\n"
                  "Content-Type: text/html; charset=UTF-8\r\n"
@@ -97,14 +89,14 @@ int main(void) {
 #ifdef _WIN32
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        printf("Error al inicializar Winsock.\n");
+        printf("Error de inicialización Winsock.\n");
         return 1;
     }
 #endif
 
     SOCKET server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd == INVALID_SOCKET) {
-        printf("Error creando el socket.\n");
+        printf("Error creando socket.\n");
         return 1;
     }
 
@@ -114,27 +106,22 @@ int main(void) {
     address.sin_port = htons(PORT);
 
     if (bind(server_fd, (struct sockaddr*)&address, sizeof(address)) == SOCKET_ERROR) {
-        printf("Error haciendo bind al puerto %d.\n", PORT);
+        printf("Error bind en puerto %d.\n", PORT);
         closesocket(server_fd);
         return 1;
     }
 
     if (listen(server_fd, 10) == SOCKET_ERROR) {
-        printf("Error al escuchar en el socket.\n");
+        printf("Error en listen.\n");
         closesocket(server_fd);
         return 1;
     }
 
-    printf("========================================================\n");
-    printf(" 🚀 SERVIDOR HTTP EN C CORRIENDO EN http://localhost:%d \n", PORT);
-    printf("========================================================\n");
-    printf("Presiona Ctrl+C para detener el servidor.\n");
+    printf("Servidor HTTP escuchando en http://localhost:%d\n", PORT);
 
-    // Bucle para aceptar peticiones
-    for (int i = 0; i < 3; i++) { // Ejecuta 3 ciclos de demostración o cliente
+    for (int i = 0; i < 3; i++) {
         struct sockaddr_in client_addr;
         socklen_t addr_len = sizeof(client_addr);
-        printf("\nEsperando conexiones activas...\n");
 
         SOCKET client_socket = accept(server_fd, (struct sockaddr*)&client_addr, &addr_len);
         if (client_socket != INVALID_SOCKET) {

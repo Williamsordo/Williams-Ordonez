@@ -1,11 +1,8 @@
 /*
- * ============================================================================
- * Proyecto   : Key-Value Storage Engine (Motor de Base de Datos Clave-Valor)
- * Nivel      : Avanzado / Portafolio Senior
- * Archivo    : kv_store.c
- * Descripción: Motor de base de datos en C con tabla Hash en memoria,
- *              búsqueda O(1), resolución de colisiones y persistencia binaria en disco.
- * ============================================================================
+ * Key-Value Storage Engine
+ * ------------------------
+ * Almacenamiento clave-valor en memoria con tabla hash,
+ * resolución de colisiones por linear probing y persistencia binaria.
  */
 
 #include <stdio.h>
@@ -27,17 +24,17 @@ typedef struct {
     int count;
 } KVStore;
 
-// Función de Hash (djb2 algorithm)
+/* Función hash (algoritmo djb2) */
 unsigned int hash(const char* str) {
     unsigned long hash = 5381;
     int c;
     while ((c = *str++)) {
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+        hash = ((hash << 5) + hash) + c;
     }
     return hash % TABLE_SIZE;
 }
 
-// Inicializar el almacenamiento
+/* Inicializar estructura de la base de datos */
 void kv_init(KVStore* store) {
     store->count = 0;
     for (int i = 0; i < TABLE_SIZE; i++) {
@@ -47,29 +44,26 @@ void kv_init(KVStore* store) {
     }
 }
 
-// Insertar o actualizar clave-valor (SET)
+/* Insertar o actualizar par clave-valor */
 int kv_set(KVStore* store, const char* key, const char* value) {
     if (store->count >= TABLE_SIZE) {
-        printf("Error: La base de datos está llena.\n");
+        printf("Error: La base de datos esta llena.\n");
         return 0;
     }
 
     unsigned int index = hash(key);
     unsigned int start_index = index;
 
-    // Linear Probing para resolver colisiones
     while (store->entries[index].is_occupied) {
         if (strcmp(store->entries[index].key, key) == 0) {
-            // Actualizar valor existente
             strncpy(store->entries[index].value, value, MAX_VAL_LEN - 1);
             store->entries[index].value[MAX_VAL_LEN - 1] = '\0';
             return 1;
         }
         index = (index + 1) % TABLE_SIZE;
-        if (index == start_index) return 0; // Tabla llena
+        if (index == start_index) return 0;
     }
 
-    // Insertar nuevo registro
     store->entries[index].is_occupied = 1;
     strncpy(store->entries[index].key, key, MAX_KEY_LEN - 1);
     store->entries[index].key[MAX_KEY_LEN - 1] = '\0';
@@ -79,7 +73,7 @@ int kv_set(KVStore* store, const char* key, const char* value) {
     return 1;
 }
 
-// Consultar por clave (GET)
+/* Buscar valor por clave */
 const char* kv_get(KVStore* store, const char* key) {
     unsigned int index = hash(key);
     unsigned int start_index = index;
@@ -92,10 +86,10 @@ const char* kv_get(KVStore* store, const char* key) {
         if (index == start_index) break;
     }
 
-    return NULL; // No encontrado
+    return NULL;
 }
 
-// Eliminar clave (DELETE)
+/* Eliminar registro */
 int kv_delete(KVStore* store, const char* key) {
     unsigned int index = hash(key);
     unsigned int start_index = index;
@@ -112,85 +106,76 @@ int kv_delete(KVStore* store, const char* key) {
         if (index == start_index) break;
     }
 
-    return 0; // No encontrado
+    return 0;
 }
 
-// Guardar base de datos a disco binario
+/* Guardar tabla en archivo binario */
 int kv_save_to_disk(KVStore* store, const char* filename) {
     FILE* file = fopen(filename, "wb");
     if (!file) {
-        printf("Error: No se pudo abrir el archivo para guardar.\n");
+        printf("Error al abrir archivo para guardar.\n");
         return 0;
     }
     fwrite(store, sizeof(KVStore), 1, file);
     fclose(file);
-    printf("Base de datos guardada exitosamente en '%s'.\n", filename);
+    printf("Base de datos guardada en '%s'.\n", filename);
     return 1;
 }
 
-// Cargar base de datos desde disco binario
+/* Cargar tabla desde archivo binario */
 int kv_load_from_disk(KVStore* store, const char* filename) {
     FILE* file = fopen(filename, "rb");
     if (!file) {
-        printf("Error: No se encontró el archivo '%s'.\n", filename);
+        printf("Error al abrir archivo '%s'.\n", filename);
         return 0;
     }
     fread(store, sizeof(KVStore), 1, file);
     fclose(file);
-    printf("Base de datos cargada exitosamente desde '%s'.\n", filename);
+    printf("Base de datos cargada desde '%s'.\n", filename);
     return 1;
 }
 
-// Listar todos los registros activos
+/* Mostrar registros activos */
 void kv_list(KVStore* store) {
-    printf("\n--- REGISTROS ACTIVOS EN LA BASE DE DATOS (%d) ---\n", store->count);
+    printf("\n--- Registros en base de datos (%d) ---\n", store->count);
     int count = 0;
     for (int i = 0; i < TABLE_SIZE; i++) {
         if (store->entries[i].is_occupied) {
-            printf("[%03d] CLAVE: %-15s | VALOR: %s\n", i, store->entries[i].key, store->entries[i].value);
+            printf("[%03d] %-15s => %s\n", i, store->entries[i].key, store->entries[i].value);
             count++;
         }
     }
     if (count == 0) {
-        printf("(Base de datos vacía)\n");
+        printf("(Sin registros)\n");
     }
-    printf("---------------------------------------------------\n\n");
+    printf("--------------------------------------\n\n");
 }
 
 int main(void) {
     KVStore db;
     kv_init(&db);
 
-    printf("==================================================\n");
-    printf("     DEMO: MOTOR DE BASE DE DATOS CLAVE-VALOR     \n");
-    printf("==================================================\n");
+    printf("=== Motor Key-Value Storage ===\n");
 
-    // Insertar datos de prueba
-    kv_set(&db, "usuario_101", "Williams Ordóñez");
-    kv_set(&db, "rol", "Lead Software Engineer");
-    kv_set(&db, "lenguaje", "C / C++ / Python");
-    kv_set(&db, "estado", "Activo");
+    kv_set(&db, "usuario", "Williams Ordonez");
+    kv_set(&db, "rol", "Software Engineer");
+    kv_set(&db, "lenguaje", "C");
 
     kv_list(&db);
 
-    // Consulta de datos
-    printf("Consultando 'usuario_101': %s\n", kv_get(&db, "usuario_101"));
-    printf("Consultando 'rol': %s\n", kv_get(&db, "rol"));
+    printf("Buscar 'usuario': %s\n", kv_get(&db, "usuario"));
+    printf("Buscar 'rol': %s\n", kv_get(&db, "rol"));
 
-    // Guardar en disco
     kv_save_to_disk(&db, "database.db");
 
-    // Borrar un elemento
-    printf("\nEliminando registro 'estado'...\n");
-    kv_delete(&db, "estado");
-
+    printf("\nEliminando 'rol'...\n");
+    kv_delete(&db, "rol");
     kv_list(&db);
 
-    // Restaurar desde disco
-    KVStore db_restaurada;
-    kv_init(&db_restaurada);
-    kv_load_from_disk(&db_restaurada, "database.db");
-    kv_list(&db_restaurada);
+    KVStore db_bak;
+    kv_init(&db_bak);
+    kv_load_from_disk(&db_bak, "database.db");
+    kv_list(&db_bak);
 
     return 0;
 }
