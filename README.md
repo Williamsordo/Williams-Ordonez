@@ -26,7 +26,8 @@ La arquitectura del repositorio sigue las mejores prácticas de la industria, es
 ├── 02_algoritmos_2/                      # Programación modular y algoritmos avanzados
 │   ├── 01_funciones/                     # Definición de funciones y parámetros
 │   ├── 02_arreglos/                      # Estructuras de datos estáticas (vectores)
-│   └── 03_recursividad_y_algoritmos/     # Recursividad y matemática computacional
+│   ├── 03_recursividad_y_algoritmos/     # Recursividad y matemática computacional
+│   └── 04_estructuras_de_datos/          # Memoria dinámica y Árboles Binarios (BST)
 ├── .gitignore                            # Filtro para binarios y archivos temporales
 ├── LICENSE                               # Licencia de código abierto MIT
 ├── Makefile                              # Automatización de compilación
@@ -64,6 +65,7 @@ La arquitectura del repositorio sigue las mejores prácticas de la industria, es
 | **Recursividad** | [`maximo_comun_divisor.c`](02_algoritmos_2/03_recursividad_y_algoritmos/maximo_comun_divisor.c) | Algoritmo de Euclides recursivo. |
 | **Recursividad** | [`numero_perfecto.c`](02_algoritmos_2/03_recursividad_y_algoritmos/numero_perfecto.c) | Sumatoria de divisores propios. |
 | **Recursividad** | [`numero_primo.c`](02_algoritmos_2/03_recursividad_y_algoritmos/numero_primo.c) | Evaluación de primalidad optimizada $\sqrt{N}$. |
+| **Estructuras de Datos** | [`arbol_binario.c`](02_algoritmos_2/04_estructuras_de_datos/arbol_binario.c) | Árbol Binario de Búsqueda (BST) y memoria dinámica (`malloc`/`free`). |
 
 ---
 

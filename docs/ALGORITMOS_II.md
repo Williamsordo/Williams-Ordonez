@@ -1,7 +1,7 @@
 # 📙 Algoritmos y Programación II
 
 ## Descripción de la Asignatura
-Esta asignatura profundiza en la modularización de software, diseño de funciones reusables, paso de parámetros, manejo de estructuras de datos estáticas (arreglos) y algoritmos recursivos.
+Esta asignatura profundiza en la modularización de software, diseño de funciones reusables, paso de parámetros, manejo de estructuras de datos estáticas (arreglos), recursividad y estructuras de datos dinámicas no lineales (Árboles Binarios).
 
 ---
 
@@ -25,3 +25,7 @@ Resolución de problemas mediante llamadas recursivas y optimización de complej
 - `maximo_comun_divisor.c`: Implementación recursiva del clásico Algoritmo de Euclides.
 - `numero_perfecto.c`: Algoritmo de detección de propiedades aritméticas de suma de divisores.
 - `numero_primo.c`: Test de primalidad eficiente limitando iteraciones a la raíz cuadrada $\sqrt{N}$.
+
+### 4. Estructuras de Datos No Lineales (`04_estructuras_de_datos/`)
+Gestión dinámica de memoria mediante punteros (`malloc`/`free`):
+- `arbol_binario.c`: Implementación de un Árbol Binario de Búsqueda (BST), inserción recursiva y recorrido en In-Order.
