@@ -1,0 +1,23 @@
+# Binarios y compilados de C
+*.exe
+*.out
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+
+# Archivos de depuración y símbolos
+*.dSYM/
+*.pdb
+
+# Configuraciones de IDE y editores
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Archivos temporales de compilación
+build/
+bin/
